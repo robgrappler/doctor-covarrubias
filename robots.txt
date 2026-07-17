@@ -1,0 +1,5 @@
+# PREVIEW ONLY — delete this file at launch (and the noindex meta in index.html).
+# Keeps the in-progress draft out of search results while it still carries
+# placeholder cédula / universidad / WhatsApp values.
+User-agent: *
+Disallow: /
