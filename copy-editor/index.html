@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- copy-editor/index.html - Live copy editor for the Dr. Covarrubias site: section-by-section fields with visual references, local autosave, Netlify draft save, and JSON export. -->
+<!-- copy-editor/index.html - Live copy editor for the Dr. Covarrubias site: section-by-section fields with visual references, local autosave, and draft submission via Netlify Forms. -->
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8">
@@ -297,16 +297,6 @@
       return text.replaceAll('https://', 'hxxps://').replaceAll('http://', 'hxxp://');
     }
 
-    function downloadJson(filename, payload) {
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const objectUrl = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = objectUrl;
-      anchor.download = filename;
-      anchor.click();
-      URL.revokeObjectURL(objectUrl);
-    }
-
     function setPath(target, path, value) {
       const keys = Array.isArray(path) ? path : path.split('.');
       const lastKey = keys.at(-1);
@@ -500,7 +490,7 @@
       function updateValue(path, value) {
         setSaveState((current) =>
           current.status === 'success'
-            ? { status: 'dirty', message: 'Hay cambios locales pendientes de guardar en Netlify.' }
+            ? { status: 'dirty', message: 'Tiene cambios nuevos sin enviar. Pulse "Enviar mi información" cuando termine.' }
             : current,
         );
         setContent((current) => {
@@ -510,12 +500,8 @@
         });
       }
 
-      function exportJson() {
-        downloadJson('covarrubias-copy-editor-export.json', buildExportPayload('copy-editor', content));
-      }
-
       async function saveDraftRemotely() {
-        setSaveState({ status: 'saving', message: 'Guardando borrador en Netlify...' });
+        setSaveState({ status: 'saving', message: 'Enviando su información...' });
 
         const fields = {
           'form-name': NETLIFY_FORM_NAME,
@@ -538,11 +524,11 @@
           if (!response.ok) {
             throw new Error(`Netlify form request failed with ${response.status}`);
           }
-          setSaveState({ status: 'success', message: `Guardado en Netlify a las ${formatSaveTime(new Date())}.` });
+          setSaveState({ status: 'success', message: `Información enviada a las ${formatSaveTime(new Date())}. ¡Gracias! Puede seguir editando y enviar de nuevo cuando quiera.` });
         } catch (_error) {
           setSaveState({
             status: 'error',
-            message: 'No se pudo guardar en Netlify desde este entorno. El autosave local sigue activo.',
+            message: 'No se pudo enviar la información. Sus cambios siguen guardados en este navegador; intente de nuevo en unos minutos.',
           });
         }
       }
@@ -554,26 +540,32 @@
         window.localStorage.removeItem(STORAGE_KEY);
         setSaveState({
           status: 'dirty',
-          message: 'El copy se reseteó localmente. Guarda si quieres subir esta versión a Netlify.',
+          message: 'Se restauraron los textos originales. Pulse "Enviar mi información" si quiere mandar esta versión.',
         });
       }
+
+      const actionsRow = html`
+        <div>
+          ${saveState.message ? html`<p className=${getSaveNoteClass(saveState.status)}>${saveState.message}</p>` : null}
+          <div className="header-actions" style=${{ marginTop: '14px' }}>
+            <${ActionButton} label=${saveState.status === 'saving' ? 'Enviando...' : 'Enviar mi información'} onClick=${saveDraftRemotely} disabled=${saveState.status === 'saving'} />
+            <${ActionButton} label="Restaurar textos originales" variant="ghost" onClick=${resetDefaults} />
+          </div>
+        </div>
+      `;
 
       return html`
         <div className="app-shell">
           <div className="shell-inner stack">
             <header className="panel-card">
-              <p className="eyebrow">Copy Editor</p>
-              <h1 className="card-title" style=${{ fontSize: '36px' }}>Edita cada sección con su referencia visual</h1>
+              <p className="eyebrow">Revisión de textos</p>
+              <h1 className="card-title" style=${{ fontSize: '36px' }}>Edite cada sección con su referencia visual</h1>
               <p className="card-desc">
-                Cada bloque muestra la captura del sitio actual junto a los campos de texto para editar el copy con contexto.
-                El autosave local guarda tus cambios en este navegador; usa Guardar borrador para enviarlos a Netlify.
+                Cada bloque muestra una captura del sitio actual junto a los campos de texto, para editar con contexto.
+                Sus cambios se guardan automáticamente en este navegador; cuando termine, pulse "Enviar mi información"
+                para que su equipo los reciba.
               </p>
-              ${saveState.message ? html`<p className=${getSaveNoteClass(saveState.status)}>${saveState.message}</p>` : null}
-              <div className="header-actions" style=${{ marginTop: '18px' }}>
-                <${ActionButton} label=${saveState.status === 'saving' ? 'Guardando...' : 'Guardar borrador'} variant="secondary" onClick=${saveDraftRemotely} disabled=${saveState.status === 'saving'} />
-                <${ActionButton} label="Exportar JSON" variant="secondary" onClick=${exportJson} />
-                <${ActionButton} label="Reset a copy original" variant="ghost" onClick=${resetDefaults} />
-              </div>
+              ${actionsRow}
             </header>
 
             <${SectionCard}
@@ -762,6 +754,16 @@
                 <${TextInput} label="Línea legal" value=${content.footer.legal} onChange=${(value) => updateValue('footer.legal', value)} />
               </div>
             </${EditorSectionLayout}>
+
+            <section className="panel-card">
+              <p className="eyebrow">Último paso</p>
+              <h2 className="card-title">¿Terminó de revisar?</h2>
+              <p className="card-desc">
+                Pulse "Enviar mi información" para que su equipo reciba los cambios.
+                Puede volver a editar y enviar tantas veces como necesite.
+              </p>
+              <div style=${{ marginTop: '18px' }}>${actionsRow}</div>
+            </section>
           </div>
         </div>
       `;
