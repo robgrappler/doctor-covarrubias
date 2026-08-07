@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<!-- copy-editor/index.html - Live copy editor for the Dr. Covarrubias site: section-by-section fields with visual references, local autosave, Netlify draft save, and JSON export. -->
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dr. Covarrubias | Copy Editor</title>
+  <meta name="description" content="Editor en vivo para ajustar el copy del sitio del Dr. Covarrubias con referencia visual por sección.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f6f8;
+      --ink: #211c24;
+      --muted: #55575c;
+      --faint: #a7a8ac;
+      --line: #e6e4e9;
+      --card: #ffffff;
+      --accent: #66505d;
+      --onaccent: #fffde3;
+      --dfont: 'Instrument Serif', serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Hanken Grotesk', sans-serif; }
+    .app-shell { min-height: 100vh; }
+    .shell-inner { max-width: 1120px; margin: 0 auto; padding: 32px 20px 72px; }
+    @media (min-width: 760px) { .shell-inner { padding: 48px 48px 96px; } }
+    .panel-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px 24px; }
+    @media (min-width: 760px) { .panel-card { padding: 34px 36px; } }
+    .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+    .card-title { font-family: var(--dfont); font-weight: 400; font-size: 27px; line-height: 1.15; margin: 0 0 8px; }
+    .card-desc { font-size: 14px; line-height: 1.6; color: var(--muted); margin: 0; max-width: 620px; }
+    .field-label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 7px; color: var(--ink); }
+    .field-input { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #fdfdfe; padding: 11px 13px; font: inherit; font-size: 14px; color: var(--ink); }
+    .field-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .field-textarea { resize: vertical; line-height: 1.55; }
+    .field-hint { display: block; font-size: 12px; line-height: 1.5; color: var(--faint); margin-bottom: 7px; }
+    .grid-2 { display: grid; gap: 16px; }
+    @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .subcard { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 14px; }
+    .editor-split { display: grid; gap: 26px; }
+    @media (min-width: 980px) { .editor-split { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); align-items: start; } }
+    .fields-col { display: grid; gap: 16px; }
+    .reference-shot { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+    .reference-shot img { display: block; width: 100%; height: auto; }
+    .reference-shot--mobile { max-width: 300px; }
+    .ref-label { font-size: 10px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+    .ref-note { font-size: 12px; line-height: 1.5; color: var(--faint); margin: 0 0 10px; }
+    .action-button, .secondary-button, .ghost-button { font: inherit; font-size: 14px; font-weight: 600; border-radius: 999px; padding: 11px 22px; cursor: pointer; transition: opacity .15s ease; }
+    .action-button { background: var(--accent); color: var(--onaccent); border: 1px solid var(--accent); }
+    .secondary-button { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .ghost-button { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .action-button:hover, .secondary-button:hover, .ghost-button:hover { opacity: 0.75; }
+    .action-button:disabled, .secondary-button:disabled { opacity: 0.5; cursor: default; }
+    .chip-toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; font: inherit; font-size: 13px; font-weight: 600; border: 1px solid var(--line); background: #fdfdfe; color: var(--muted); border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+    .chip-toggle--active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, #ffffff); }
+    .chip-state { font-size: 11px; opacity: 0.75; font-weight: 500; }
+    .toggle-grid { display: grid; gap: 10px; }
+    @media (min-width: 640px) { .toggle-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1024px) { .toggle-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .header-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .save-note { font-size: 12px; line-height: 1.6; margin: 8px 0 0; }
+    .save-note--idle { color: var(--faint); }
+    .save-note--error { color: #9f2d2d; }
+    .save-note--success { color: rgba(32, 96, 64, 0.9); }
+    .stack { display: grid; gap: 22px; }
+  </style>
+</head>
+<body>
+  <form name="covarrubias-client-drafts" method="POST" data-netlify="true" hidden>
+    <input type="hidden" name="form-name" value="covarrubias-client-drafts">
+    <input type="text" name="draftType">
+    <input type="text" name="sourceRoute">
+    <input type="text" name="draftLabel">
+    <input type="text" name="businessName">
+    <input type="text" name="contactName">
+    <input type="email" name="contactEmail">
+    <input type="text" name="whatsapp">
+    <textarea name="payloadJson"></textarea>
+  </form>
+  <div id="app"></div>
+
+  <script type="module">
+    import React, { useEffect, useMemo, useState } from 'https://esm.sh/react@18.3.1';
+    import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
+    import htm from 'https://esm.sh/htm@3.1.1';
+
+    const html = htm.bind(React.createElement);
+
+    const STORAGE_KEY = 'covarrubias-copy-editor-v2';
+    const NETLIFY_FORM_NAME = 'covarrubias-client-drafts';
+    const SOURCE_ROUTE = '/copy-editor/';
+
+    // Default copy mirrors the live index.html so "Reset" always returns to the published site text.
+    const DEFAULT_SITE_CONTENT = {
+      brand: {
+        doctorName: 'Dr. Alexis Eduardo Covarrubias Benítez',
+        shortName: 'Dr. Alexis Covarrubias',
+        whatsappNumber: '528100000000',
+        whatsappMessage: 'Hola, quisiera agendar una consulta urológica.',
+        navCta: 'Agendar',
+      },
+      visibility: {
+        credentials: true,
+        about: true,
+        services: true,
+        faq: true,
+        contact: true,
+        ctaBand: true,
+      },
+      hero: {
+        eyebrow: 'Urólogo · Monterrey, N.L.',
+        title: 'Atención urológica clara, confidencial y cercana en Monterrey.',
+        body: 'Consulta especializada para adultos, con explicaciones claras y un plan de tratamiento definido contigo.',
+        primaryCta: 'Agendar consulta',
+        secondaryCta: 'Ver servicios',
+      },
+      credentials: {
+        heading: 'Formación y certificación',
+        items: [
+          { label: 'Cédula profesional', value: '0000000 · Esp. 000000' },
+          { label: 'Universidad', value: '[Universidad] — Monterrey' },
+          { label: 'Certificación', value: 'CONAMEU (vigente)' },
+        ],
+      },
+      about: {
+        eyebrow: 'Sobre el Dr. Covarrubias',
+        lede: 'Formado en urología con enfoque en el paciente adulto, combina tecnología diagnóstica actual con un trato humano. Cada consulta se centra en explicar con claridad y decidir en conjunto el mejor tratamiento.',
+        photoTag: 'Consultorio',
+        photoCaption: 'TecSalud · Monterrey, N.L.',
+        facts: [
+          { label: 'Enfoque', value: 'Urología del adulto' },
+          { label: 'Ubicación', value: 'Monterrey, N.L.' },
+          { label: 'Horario', value: 'Lun–Vie · 9:00–18:00' },
+        ],
+      },
+      services: {
+        heading: 'Padecimientos y tratamientos',
+        countLabel: '06 áreas de atención',
+        cards: [
+          { title: 'Cálculos renales', body: 'Diagnóstico y manejo de piedras en riñón y vías urinarias.' },
+          { title: 'Salud prostática', body: 'Evaluación y tratamiento de la hiperplasia prostática benigna.' },
+          { title: 'Urología oncológica', body: 'Detección y seguimiento de cáncer de próstata, vejiga y riñón.' },
+          { title: 'Salud sexual masculina', body: 'Disfunción eréctil y padecimientos asociados.' },
+          { title: 'Vasectomía', body: 'Procedimiento ambulatorio de anticoncepción definitiva.' },
+          { title: 'Infecciones urinarias', body: 'Diagnóstico y tratamiento de infecciones recurrentes.' },
+        ],
+      },
+      faq: {
+        eyebrow: 'Antes de agendar',
+        heading: 'Preguntas frecuentes',
+        items: [
+          {
+            question: '¿Necesito una referencia para agendar?',
+            answer: 'No. Puedes agendar directamente por WhatsApp; en la primera consulta evaluamos tu caso y definimos los siguientes pasos.',
+          },
+          {
+            question: '¿Aceptan seguro de gastos médicos?',
+            answer: 'Atiendo consulta particular y también con las principales aseguradoras. Confirma tu aseguradora por WhatsApp antes de tu cita. [Aseguradoras a confirmar.]',
+          },
+          {
+            question: '¿Qué debo llevar a la primera cita?',
+            answer: 'Identificación, tus estudios previos (si los tienes) y una lista de los medicamentos que tomas actualmente.',
+          },
+          {
+            question: '¿Cuánto dura la consulta?',
+            answer: 'Aproximadamente 30–40 minutos, con tiempo para explicar tu diagnóstico y resolver todas tus dudas.',
+          },
+        ],
+      },
+      contact: {
+        heading: 'Contacto y ubicación',
+        consultorios: [
+          {
+            enabled: true,
+            name: 'TecSalud',
+            address: '[Calle y número], [Colonia]\nMonterrey, Nuevo León · CP 00000',
+            mapsLink: 'https://www.google.com/maps/search/?api=1&query=consultorio+urologia+monterrey',
+            hours: 'Lun–Vie · 9:00–18:00',
+          },
+          {
+            enabled: false,
+            name: '',
+            address: '',
+            mapsLink: '',
+            hours: '',
+          },
+          {
+            enabled: false,
+            name: '',
+            address: '',
+            mapsLink: '',
+            hours: '',
+          },
+        ],
+        phone: '+52 81 0000 0000',
+        whatsappLabel: 'Enviar mensaje →',
+        insurance: 'Consulta particular · Aseguradoras: [GNP · AXA · MetLife]',
+        mapCardLabel: 'Ubicación del consultorio',
+        mapCardText: 'Consulta la ruta y llega directamente desde Google Maps.',
+        mapCardCta: 'Abrir ubicación →',
+      },
+      ctaBand: {
+        eyebrow: 'Agenda tu cita',
+        heading: '¿Listo para tu consulta? Escríbeme por WhatsApp y agendamos.',
+        buttonLabel: 'Agendar consulta',
+        note: 'Respondo normalmente el mismo día · Lun–Vie 9:00–18:00',
+      },
+      footer: {
+        name: 'Dr. Alexis Covarrubias',
+        legal: '© 2026 · Monterrey, N.L.',
+      },
+    };
+
+    const SECTION_SCREENSHOTS = {
+      desktop: {
+        hero: '/assets/editor-sections/hero.png',
+        credentials: '/assets/editor-sections/credentials.png',
+        about: '/assets/editor-sections/about.png',
+        services: '/assets/editor-sections/services.png',
+        faq: '/assets/editor-sections/faq.png',
+        contact: '/assets/editor-sections/contact.png',
+        ctaBand: '/assets/editor-sections/cta-band.png',
+        footer: '/assets/editor-sections/footer.png',
+      },
+      mobile: {
+        hero: '/assets/editor-sections/hero-mobile.png',
+        credentials: '/assets/editor-sections/credentials-mobile.png',
+        about: '/assets/editor-sections/about-mobile.png',
+        services: '/assets/editor-sections/services-mobile.png',
+        faq: '/assets/editor-sections/faq-mobile.png',
+        contact: '/assets/editor-sections/contact-mobile.png',
+        ctaBand: '/assets/editor-sections/cta-band-mobile.png',
+        footer: '/assets/editor-sections/footer-mobile.png',
+      },
+    };
+
+    function isPlainObject(value) {
+      return Object.prototype.toString.call(value) === '[object Object]';
+    }
+
+    function deepClone(value) {
+      if (typeof structuredClone === 'function') {
+        return structuredClone(value);
+      }
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function mergeWithDefaults(defaults, overrides) {
+      if (Array.isArray(defaults)) {
+        return Array.isArray(overrides) ? deepClone(overrides) : deepClone(defaults);
+      }
+      if (!isPlainObject(defaults)) {
+        return overrides === undefined ? defaults : overrides;
+      }
+      const result = {};
+      const source = isPlainObject(overrides) ? overrides : {};
+      for (const key of Object.keys(defaults)) {
+        result[key] = mergeWithDefaults(defaults[key], source[key]);
+      }
+      return result;
+    }
+
+    function readStoredJson(key) {
+      try {
+        const raw = window.localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function saveStoredJson(key, value) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      } catch (_error) {
+        /* private mode / quota: local autosave silently unavailable */
+      }
+    }
+
+    function buildExportPayload(type, payload) {
+      return {
+        exportType: type,
+        schemaVersion: 1,
+        exportedAt: new Date().toISOString(),
+        payload: deepClone(payload),
+      };
+    }
+
+    function downloadJson(filename, payload) {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    function setPath(target, path, value) {
+      const keys = Array.isArray(path) ? path : path.split('.');
+      const lastKey = keys.at(-1);
+      let cursor = target;
+      for (const key of keys.slice(0, -1)) {
+        cursor = cursor[key];
+      }
+      cursor[lastKey] = value;
+    }
+
+    function formatSaveTime(date) {
+      return date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getSaveNoteClass(status) {
+      if (status === 'error') return 'save-note save-note--error';
+      if (status === 'success') return 'save-note save-note--success';
+      return 'save-note save-note--idle';
+    }
+
+    function Field({ label, hint, children }) {
+      return html`
+        <label style=${{ display: 'block' }}>
+          <span className="field-label">${label}</span>
+          ${hint ? html`<span className="field-hint">${hint}</span>` : null}
+          ${children}
+        </label>
+      `;
+    }
+
+    function TextInput({ label, hint, value, onChange, placeholder = '', type = 'text' }) {
+      return html`
+        <${Field} label=${label} hint=${hint}>
+          <input
+            className="field-input"
+            type=${type}
+            value=${value ?? ''}
+            placeholder=${placeholder}
+            onChange=${(event) => onChange(event.target.value)}
+          />
+        </${Field}>
+      `;
+    }
+
+    function TextArea({ label, hint, value, onChange, placeholder = '', rows = 4 }) {
+      return html`
+        <${Field} label=${label} hint=${hint}>
+          <textarea
+            className="field-input field-textarea"
+            rows=${rows}
+            placeholder=${placeholder}
+            value=${value ?? ''}
+            onChange=${(event) => onChange(event.target.value)}
+          />
+        </${Field}>
+      `;
+    }
+
+    function TogglePill({ label, checked, onToggle }) {
+      return html`
+        <button type="button" className=${`chip-toggle ${checked ? 'chip-toggle--active' : ''}`} aria-pressed=${checked} onClick=${onToggle}>
+          <span>${label}</span>
+          <span className="chip-state">${checked ? 'Visible' : 'Oculta'}</span>
+        </button>
+      `;
+    }
+
+    function ActionButton({ label, onClick, variant = 'primary', type = 'button', disabled = false }) {
+      const className =
+        variant === 'secondary' ? 'secondary-button' : variant === 'ghost' ? 'ghost-button' : 'action-button';
+      return html`<button type=${type} className=${className} onClick=${onClick} disabled=${disabled}>${label}</button>`;
+    }
+
+    function SectionCard({ eyebrow, title, description, children }) {
+      return html`
+        <section className="panel-card">
+          ${eyebrow ? html`<p className="eyebrow">${eyebrow}</p>` : null}
+          <h2 className="card-title">${title}</h2>
+          ${description ? html`<p className="card-desc">${description}</p>` : null}
+          <div className="stack" style=${{ marginTop: '20px' }}>${children}</div>
+        </section>
+      `;
+    }
+
+    function ScreenshotReference({ imageSrc, imageAlt, device }) {
+      return html`
+        <div>
+          <p className="ref-label">Referencia visual</p>
+          <p className="ref-note">Screenshot actual del sitio en ${device === 'mobile' ? 'móvil' : 'desktop'}.</p>
+          <div className=${`reference-shot ${device === 'mobile' ? 'reference-shot--mobile' : ''}`}>
+            <img src=${imageSrc} alt=${imageAlt} loading="lazy" />
+          </div>
+        </div>
+      `;
+    }
+
+    function EditorSectionLayout({ sectionKey, device, imageAlt, children, ...props }) {
+      const imageSrc = SECTION_SCREENSHOTS[device][sectionKey];
+      return html`
+        <${SectionCard} ...${props}>
+          <div className="editor-split">
+            <div className="fields-col">${children}</div>
+            <${ScreenshotReference} imageSrc=${imageSrc} imageAlt=${imageAlt} device=${device} />
+          </div>
+        </${SectionCard}>
+      `;
+    }
+
+    function CredentialFields({ content, updateValue }) {
+      return content.credentials.items.map(
+        (item, index) => html`
+          <div className="subcard" key=${index}>
+            <div className="grid-2">
+              <${TextInput} label=${`Credencial ${index + 1} etiqueta`} value=${item.label} onChange=${(value) => updateValue(['credentials', 'items', index, 'label'], value)} />
+              <${TextInput} label=${`Credencial ${index + 1} valor`} value=${item.value} onChange=${(value) => updateValue(['credentials', 'items', index, 'value'], value)} />
+            </div>
+          </div>
+        `,
+      );
+    }
+
+    function AboutFactFields({ content, updateValue }) {
+      return content.about.facts.map(
+        (fact, index) => html`
+          <div className="subcard" key=${index}>
+            <div className="grid-2">
+              <${TextInput} label=${`Dato ${index + 1} etiqueta`} value=${fact.label} onChange=${(value) => updateValue(['about', 'facts', index, 'label'], value)} />
+              <${TextInput} label=${`Dato ${index + 1} valor`} value=${fact.value} onChange=${(value) => updateValue(['about', 'facts', index, 'value'], value)} />
+            </div>
+          </div>
+        `,
+      );
+    }
+
+    function ServiceCardFields({ content, updateValue }) {
+      return content.services.cards.map(
+        (card, index) => html`
+          <div className="subcard" key=${index}>
+            <${TextInput} label=${`Servicio ${String(index + 1).padStart(2, '0')} título`} value=${card.title} onChange=${(value) => updateValue(['services', 'cards', index, 'title'], value)} />
+            <${TextArea} label="Descripción" rows=${3} value=${card.body} onChange=${(value) => updateValue(['services', 'cards', index, 'body'], value)} />
+          </div>
+        `,
+      );
+    }
+
+    function FaqFields({ content, updateValue }) {
+      return content.faq.items.map(
+        (item, index) => html`
+          <div className="subcard" key=${index}>
+            <${TextInput} label=${`Pregunta ${index + 1}`} value=${item.question} onChange=${(value) => updateValue(['faq', 'items', index, 'question'], value)} />
+            <${TextArea} label="Respuesta" rows=${4} value=${item.answer} onChange=${(value) => updateValue(['faq', 'items', index, 'answer'], value)} />
+          </div>
+        `,
+      );
+    }
+
+    function ConsultorioFields({ content, updateValue }) {
+      return content.contact.consultorios.map(
+        (consultorio, index) => html`
+          <div className="subcard" key=${index}>
+            <${TogglePill}
+              label=${`Consultorio ${index + 1}${consultorio.name ? ` · ${consultorio.name}` : ''}`}
+              checked=${consultorio.enabled}
+              onToggle=${() => updateValue(['contact', 'consultorios', index, 'enabled'], !consultorio.enabled)}
+            />
+            ${consultorio.enabled
+              ? html`
+                  <div className="grid-2">
+                    <${TextInput} label="Nombre (hospital / clínica)" placeholder="Ej. TecSalud" value=${consultorio.name} onChange=${(value) => updateValue(['contact', 'consultorios', index, 'name'], value)} />
+                    <${TextInput} label="Horario en esta sede" placeholder="Ej. Lun–Vie · 9:00–18:00" value=${consultorio.hours} onChange=${(value) => updateValue(['contact', 'consultorios', index, 'hours'], value)} />
+                  </div>
+                  <${TextArea} label="Dirección" rows=${3} hint="Usa un salto de línea para separar calle y ciudad." value=${consultorio.address} onChange=${(value) => updateValue(['contact', 'consultorios', index, 'address'], value)} />
+                  <${TextInput} label="Link de Google Maps" value=${consultorio.mapsLink} onChange=${(value) => updateValue(['contact', 'consultorios', index, 'mapsLink'], value)} />
+                `
+              : null}
+          </div>
+        `,
+      );
+    }
+
+    function CopyEditorApp() {
+      const storedDraft = useMemo(() => readStoredJson(STORAGE_KEY), []);
+      const [content, setContent] = useState(() => mergeWithDefaults(DEFAULT_SITE_CONTENT, storedDraft ?? {}));
+      const [device, setDevice] = useState('desktop');
+      const [saveState, setSaveState] = useState({ status: 'idle', message: '' });
+
+      useEffect(() => {
+        saveStoredJson(STORAGE_KEY, content);
+      }, [content]);
+
+      function updateValue(path, value) {
+        setSaveState((current) =>
+          current.status === 'success'
+            ? { status: 'dirty', message: 'Hay cambios locales pendientes de guardar en Netlify.' }
+            : current,
+        );
+        setContent((current) => {
+          const next = deepClone(current);
+          setPath(next, path, value);
+          return next;
+        });
+      }
+
+      function exportJson() {
+        downloadJson('covarrubias-copy-editor-export.json', buildExportPayload('copy-editor', content));
+      }
+
+      async function saveDraftRemotely() {
+        setSaveState({ status: 'saving', message: 'Guardando borrador en Netlify...' });
+
+        const fields = {
+          'form-name': NETLIFY_FORM_NAME,
+          draftType: 'copy-editor',
+          sourceRoute: SOURCE_ROUTE,
+          draftLabel: `Copy editor - ${content.brand.shortName || 'Dr. Covarrubias'}`,
+          businessName: content.brand.doctorName,
+          contactName: content.brand.shortName,
+          contactEmail: '',
+          whatsapp: content.brand.whatsappNumber,
+          payloadJson: JSON.stringify(buildExportPayload('copy-editor', content), null, 2),
+        };
+
+        try {
+          const response = await fetch(SOURCE_ROUTE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(fields).toString(),
+          });
+          if (!response.ok) {
+            throw new Error(`Netlify form request failed with ${response.status}`);
+          }
+          setSaveState({ status: 'success', message: `Guardado en Netlify a las ${formatSaveTime(new Date())}.` });
+        } catch (_error) {
+          setSaveState({
+            status: 'error',
+            message: 'No se pudo guardar en Netlify desde este entorno. El autosave local sigue activo.',
+          });
+        }
+      }
+
+      function resetDefaults() {
+        const confirmed = window.confirm('Esto reemplazará el borrador actual con el copy original del sitio. ¿Continuar?');
+        if (!confirmed) return;
+        setContent(deepClone(DEFAULT_SITE_CONTENT));
+        window.localStorage.removeItem(STORAGE_KEY);
+        setSaveState({
+          status: 'dirty',
+          message: 'El copy se reseteó localmente. Guarda si quieres subir esta versión a Netlify.',
+        });
+      }
+
+      return html`
+        <div className="app-shell">
+          <div className="shell-inner stack">
+            <header className="panel-card">
+              <p className="eyebrow">Copy Editor</p>
+              <h1 className="card-title" style=${{ fontSize: '36px' }}>Edita cada sección con su referencia visual</h1>
+              <p className="card-desc">
+                Cada bloque muestra la captura del sitio actual junto a los campos de texto para editar el copy con contexto.
+                El autosave local guarda tus cambios en este navegador; usa Guardar borrador para enviarlos a Netlify.
+              </p>
+              ${saveState.message ? html`<p className=${getSaveNoteClass(saveState.status)}>${saveState.message}</p>` : null}
+              <div className="header-actions" style=${{ marginTop: '18px' }}>
+                <${ActionButton} label=${saveState.status === 'saving' ? 'Guardando...' : 'Guardar borrador'} variant="secondary" onClick=${saveDraftRemotely} disabled=${saveState.status === 'saving'} />
+                <${ActionButton} label="Exportar JSON" variant="secondary" onClick=${exportJson} />
+                <${ActionButton} label="Reset a copy original" variant="ghost" onClick=${resetDefaults} />
+              </div>
+            </header>
+
+            <${SectionCard}
+              eyebrow="Control"
+              title="Secciones y referencias"
+              description="Activa u oculta bloques opcionales del editor y cambia la referencia visual entre desktop y móvil."
+            >
+              <div className="toggle-grid">
+                <${TogglePill} label="Credenciales" checked=${content.visibility.credentials} onToggle=${() => updateValue('visibility.credentials', !content.visibility.credentials)} />
+                <${TogglePill} label="Sobre el doctor" checked=${content.visibility.about} onToggle=${() => updateValue('visibility.about', !content.visibility.about)} />
+                <${TogglePill} label="Servicios" checked=${content.visibility.services} onToggle=${() => updateValue('visibility.services', !content.visibility.services)} />
+                <${TogglePill} label="Preguntas frecuentes" checked=${content.visibility.faq} onToggle=${() => updateValue('visibility.faq', !content.visibility.faq)} />
+                <${TogglePill} label="Contacto" checked=${content.visibility.contact} onToggle=${() => updateValue('visibility.contact', !content.visibility.contact)} />
+                <${TogglePill} label="Banda CTA" checked=${content.visibility.ctaBand} onToggle=${() => updateValue('visibility.ctaBand', !content.visibility.ctaBand)} />
+              </div>
+              <div className="grid-2">
+                <${ActionButton} label="Referencia desktop" variant=${device === 'desktop' ? 'primary' : 'secondary'} onClick=${() => setDevice('desktop')} />
+                <${ActionButton} label="Referencia móvil" variant=${device === 'mobile' ? 'primary' : 'secondary'} onClick=${() => setDevice('mobile')} />
+              </div>
+              <p className="save-note save-note--idle">Autosave local activo. Los screenshots son referencias fijas tomadas del sitio actual.</p>
+            </${SectionCard}>
+
+            <${SectionCard}
+              eyebrow="Marca"
+              title="Datos generales"
+              description="Nombre del doctor y datos de contacto que se repiten en todo el sitio."
+            >
+              <div className="grid-2">
+                <${TextInput} label="Nombre completo (nav)" value=${content.brand.doctorName} onChange=${(value) => updateValue('brand.doctorName', value)} />
+                <${TextInput} label="Nombre corto (footer)" value=${content.brand.shortName} onChange=${(value) => updateValue('brand.shortName', value)} />
+              </div>
+              <div className="grid-2">
+                <${TextInput} label="WhatsApp (solo dígitos, con lada 52)" hint="Ejemplo: 5281XXXXXXXX" value=${content.brand.whatsappNumber} onChange=${(value) => updateValue('brand.whatsappNumber', value)} />
+                <${TextInput} label="CTA del nav" value=${content.brand.navCta} onChange=${(value) => updateValue('brand.navCta', value)} />
+              </div>
+              <${TextArea} label="Mensaje precargado de WhatsApp" rows=${2} value=${content.brand.whatsappMessage} onChange=${(value) => updateValue('brand.whatsappMessage', value)} />
+            </${SectionCard}>
+
+            <${EditorSectionLayout}
+              sectionKey="hero"
+              device=${device}
+              eyebrow="Hero"
+              title="Inicio"
+              description="Ajusta la promesa principal y los CTAs sin perder la composición actual."
+              imageAlt="Screenshot de la sección hero del sitio del Dr. Covarrubias"
+            >
+              <${TextInput} label="Eyebrow" value=${content.hero.eyebrow} onChange=${(value) => updateValue('hero.eyebrow', value)} />
+              <${TextArea} label="Título" rows=${3} value=${content.hero.title} onChange=${(value) => updateValue('hero.title', value)} />
+              <${TextArea} label="Descripción" rows=${3} value=${content.hero.body} onChange=${(value) => updateValue('hero.body', value)} />
+              <div className="grid-2">
+                <${TextInput} label="CTA principal" value=${content.hero.primaryCta} onChange=${(value) => updateValue('hero.primaryCta', value)} />
+                <${TextInput} label="CTA secundario" value=${content.hero.secondaryCta} onChange=${(value) => updateValue('hero.secondaryCta', value)} />
+              </div>
+            </${EditorSectionLayout}>
+
+            ${content.visibility.credentials
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="credentials"
+                    device=${device}
+                    eyebrow="Credenciales"
+                    title="Formación y certificación"
+                    description="Cédula, universidad, colegios y certificaciones que aparecen en la banda de credenciales."
+                    imageAlt="Screenshot de la banda de credenciales"
+                  >
+                    <${CredentialFields} content=${content} updateValue=${updateValue} />
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            ${content.visibility.about
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="about"
+                    device=${device}
+                    eyebrow="Sobre el doctor"
+                    title="Presentación"
+                    description="El párrafo editorial y los datos rápidos que acompañan la foto del consultorio."
+                    imageAlt="Screenshot de la sección sobre el doctor"
+                  >
+                    <${TextInput} label="Eyebrow" value=${content.about.eyebrow} onChange=${(value) => updateValue('about.eyebrow', value)} />
+                    <${TextArea} label="Párrafo principal" rows=${5} value=${content.about.lede} onChange=${(value) => updateValue('about.lede', value)} />
+                    <div className="grid-2">
+                      <${TextInput} label="Etiqueta de la foto" value=${content.about.photoTag} onChange=${(value) => updateValue('about.photoTag', value)} />
+                      <${TextInput} label="Pie de foto" value=${content.about.photoCaption} onChange=${(value) => updateValue('about.photoCaption', value)} />
+                    </div>
+                    <${AboutFactFields} content=${content} updateValue=${updateValue} />
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            ${content.visibility.services
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="services"
+                    device=${device}
+                    eyebrow="Servicios"
+                    title="Padecimientos y tratamientos"
+                    description="Edita el encabezado y las seis tarjetas de áreas de atención."
+                    imageAlt="Screenshot de la sección de servicios"
+                  >
+                    <div className="grid-2">
+                      <${TextInput} label="Encabezado" value=${content.services.heading} onChange=${(value) => updateValue('services.heading', value)} />
+                      <${TextInput} label="Etiqueta de conteo" value=${content.services.countLabel} onChange=${(value) => updateValue('services.countLabel', value)} />
+                    </div>
+                    <${ServiceCardFields} content=${content} updateValue=${updateValue} />
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            ${content.visibility.faq
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="faq"
+                    device=${device}
+                    eyebrow="FAQ"
+                    title="Preguntas frecuentes"
+                    description="Las cuatro preguntas que resuelven dudas antes de agendar."
+                    imageAlt="Screenshot de la sección de preguntas frecuentes"
+                  >
+                    <div className="grid-2">
+                      <${TextInput} label="Eyebrow" value=${content.faq.eyebrow} onChange=${(value) => updateValue('faq.eyebrow', value)} />
+                      <${TextInput} label="Encabezado" value=${content.faq.heading} onChange=${(value) => updateValue('faq.heading', value)} />
+                    </div>
+                    <${FaqFields} content=${content} updateValue=${updateValue} />
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            ${content.visibility.contact
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="contact"
+                    device=${device}
+                    eyebrow="Contacto"
+                    title="Contacto y ubicación"
+                    description="Consultorios (hasta 3), teléfono, seguros y la tarjeta de mapa. El doctor consulta en varios lugares: activa solo los que quiera publicar."
+                    imageAlt="Screenshot de la sección de contacto"
+                  >
+                    <${TextInput} label="Encabezado" value=${content.contact.heading} onChange=${(value) => updateValue('contact.heading', value)} />
+                    <${ConsultorioFields} content=${content} updateValue=${updateValue} />
+                    <div className="grid-2">
+                      <${TextInput} label="Teléfono" value=${content.contact.phone} onChange=${(value) => updateValue('contact.phone', value)} />
+                      <${TextInput} label="Texto del link de WhatsApp" value=${content.contact.whatsappLabel} onChange=${(value) => updateValue('contact.whatsappLabel', value)} />
+                    </div>
+                    <${TextInput} label="Seguros y pagos" value=${content.contact.insurance} onChange=${(value) => updateValue('contact.insurance', value)} />
+                    <div className="grid-2">
+                      <${TextInput} label="Tarjeta de mapa: etiqueta" value=${content.contact.mapCardLabel} onChange=${(value) => updateValue('contact.mapCardLabel', value)} />
+                      <${TextInput} label="Tarjeta de mapa: CTA" value=${content.contact.mapCardCta} onChange=${(value) => updateValue('contact.mapCardCta', value)} />
+                    </div>
+                    <${TextArea} label="Tarjeta de mapa: texto" rows=${2} value=${content.contact.mapCardText} onChange=${(value) => updateValue('contact.mapCardText', value)} />
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            ${content.visibility.ctaBand
+              ? html`
+                  <${EditorSectionLayout}
+                    sectionKey="ctaBand"
+                    device=${device}
+                    eyebrow="Cierre"
+                    title="Banda de agenda"
+                    description="El cierre comercial antes del footer."
+                    imageAlt="Screenshot de la banda de llamada a la acción"
+                  >
+                    <${TextInput} label="Eyebrow" value=${content.ctaBand.eyebrow} onChange=${(value) => updateValue('ctaBand.eyebrow', value)} />
+                    <${TextArea} label="Encabezado" rows=${3} value=${content.ctaBand.heading} onChange=${(value) => updateValue('ctaBand.heading', value)} />
+                    <div className="grid-2">
+                      <${TextInput} label="Botón" value=${content.ctaBand.buttonLabel} onChange=${(value) => updateValue('ctaBand.buttonLabel', value)} />
+                      <${TextInput} label="Nota bajo el botón" value=${content.ctaBand.note} onChange=${(value) => updateValue('ctaBand.note', value)} />
+                    </div>
+                  </${EditorSectionLayout}>
+                `
+              : null}
+
+            <${EditorSectionLayout}
+              sectionKey="footer"
+              device=${device}
+              eyebrow="Footer"
+              title="Pie de página"
+              description="Nombre y línea legal del cierre del sitio."
+              imageAlt="Screenshot del footer"
+            >
+              <div className="grid-2">
+                <${TextInput} label="Nombre" value=${content.footer.name} onChange=${(value) => updateValue('footer.name', value)} />
+                <${TextInput} label="Línea legal" value=${content.footer.legal} onChange=${(value) => updateValue('footer.legal', value)} />
+              </div>
+            </${EditorSectionLayout}>
+          </div>
+        </div>
+      `;
+    }
+
+    const root = createRoot(document.getElementById('app'));
+    root.render(html`<${CopyEditorApp} />`);
+  </script>
+</body>
+</html>
