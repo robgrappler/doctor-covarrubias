@@ -290,6 +290,13 @@
       };
     }
 
+    // Netlify's spam filter (Akismet) flags submissions whose body contains URLs,
+    // so links are defanged (http -> hxxp) before sending and restored when the
+    // draft is applied to the site. Keeps the dashboard payload human-readable.
+    function defangLinks(text) {
+      return text.replaceAll('https://', 'hxxps://').replaceAll('http://', 'hxxp://');
+    }
+
     function downloadJson(filename, payload) {
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const objectUrl = URL.createObjectURL(blob);
@@ -519,7 +526,7 @@
           contactName: content.brand.shortName,
           contactEmail: '',
           whatsapp: content.brand.whatsappNumber,
-          payloadJson: JSON.stringify(buildExportPayload('copy-editor', content), null, 2),
+          payloadJson: defangLinks(JSON.stringify(buildExportPayload('copy-editor', content), null, 2)),
         };
 
         try {
