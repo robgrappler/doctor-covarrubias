@@ -87,19 +87,19 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
   }
-  .insurers { display:flex; flex-wrap:wrap; align-items:center; gap:16px 22px; margin-top:4px; }
-  .ins, .ins-swap { position:relative; display:inline-flex; align-items:center; height:28px; }
-  .ins-shape { display:block; height:100%; width:auto; opacity:0; user-select:none; pointer-events:none; transition:opacity .22s ease; }
-  .ins-mask { position:absolute; inset:0; background:var(--accent,#66505d); -webkit-mask:var(--logo) no-repeat left center / contain; mask:var(--logo) no-repeat left center / contain; opacity:1; transition:opacity .22s ease; }
+  .insurers { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:14px 10px; align-items:center; margin-top:4px; max-width:540px; }
+  .ins, .ins-swap { position:relative; display:flex; align-items:center; justify-content:center; height:40px; width:100%; }
+  .ins-shape { position:absolute; inset:0; max-width:100%; max-height:100%; width:auto; height:auto; margin:auto; object-fit:contain; opacity:0; user-select:none; pointer-events:none; transition:opacity .22s ease; }
+  .ins-mask { position:absolute; inset:0; background:var(--accent,#66505d); -webkit-mask:var(--logo) no-repeat center center / contain; mask:var(--logo) no-repeat center center / contain; opacity:1; transition:opacity .22s ease; }
   .ins:hover .ins-shape, .ins:focus-visible .ins-shape { opacity:1; }
   .ins:hover .ins-mask, .ins:focus-visible .ins-mask { opacity:0; }
-  .ins-swap .ins-flat { display:block; height:100%; width:auto; transition:opacity .22s ease; user-select:none; }
-  .ins-swap .ins-reveal { position:absolute; inset:0; height:100%; width:auto; opacity:0; transition:opacity .22s ease; user-select:none; pointer-events:none; }
+  .ins-swap .ins-flat { position:absolute; inset:0; max-width:100%; max-height:100%; width:auto; height:auto; margin:auto; object-fit:contain; transition:opacity .22s ease; user-select:none; }
+  .ins-swap .ins-reveal { position:absolute; inset:0; max-width:100%; max-height:100%; width:auto; height:auto; margin:auto; object-fit:contain; opacity:0; transition:opacity .22s ease; user-select:none; pointer-events:none; }
   .ins-swap:hover .ins-flat, .ins-swap:focus-visible .ins-flat { opacity:0; }
   .ins-swap:hover .ins-reveal, .ins-swap:focus-visible .ins-reveal { opacity:1; }
   @media (max-width: 760px) {
-    .insurers { gap:14px 18px; }
-    .ins, .ins-swap { height:24px; }
+    .insurers { grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:12px 8px; max-width:none; }
+    .ins, .ins-swap { height:36px; }
   }
 </style>
 </head>
