@@ -82,6 +82,8 @@
   .cta-pill { transition:transform .18s ease, box-shadow .18s ease; }
   .cta-pill:hover { opacity:1; transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.22); }
   .cta-pill:active { transform:translateY(0); box-shadow:0 4px 12px rgba(0,0,0,0.18); }
+  .na-credit { border-bottom:1px solid transparent; padding-bottom:1px; transition:color .15s ease, border-color .15s ease; }
+  .na-credit:hover, .na-credit:focus-visible { opacity:1; color:var(--onaccent,#fffde3); border-bottom-color:color-mix(in srgb, var(--onaccent,#fffde3) 45%, transparent); }
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
   .faq-item[open] .faq-plus { transform: rotate(45deg); }
@@ -353,7 +355,7 @@
   <div style="background:var(--accent,#66505d); border-top:1px solid color-mix(in srgb, var(--onaccent,#fffde3) 18%, var(--accent,#66505d));">
     <div class="footer sec" style="max-width:1120px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:30px 48px; font-size:13px; color:color-mix(in srgb, var(--onaccent,#fffde3) 62%, var(--accent,#66505d));">
       <div style="font-family:var(--dfont,'Instrument Serif',serif); font-size:17px; color:var(--onaccent,#fffde3);">Dr. Alexis Covarrubias</div>
-      <div>© 2026 · Monterrey, N.L.</div>
+      <div>© 2026 · Monterrey, N.L. · Sitio por <a class="na-credit" href="https://nodoalfa.com" target="_blank" rel="noopener">Nodo Alfa</a></div>
     </div>
   </div>
 
