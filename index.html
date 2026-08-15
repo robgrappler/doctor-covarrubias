@@ -76,8 +76,9 @@
   #sobre, #servicios, #faq, #contacto { scroll-margin-top:92px; }
   #dc-root { background:color-mix(in srgb, var(--bg,#ffffff) 95%, var(--accent,#66505d)) !important; }
   .nav-cta, .herocta a, .cta-band a { white-space:nowrap; }
-  .nav-cta { transition:background .15s ease; }
-  .nav-cta:hover { opacity:1; background:color-mix(in srgb, var(--accent,#66505d) 86%, #000); }
+  .nav-cta { transition:background .15s ease, transform .18s ease, box-shadow .18s ease; }
+  .nav-cta:hover { opacity:1; background:color-mix(in srgb, var(--accent,#66505d) 86%, #000); transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,0.22); }
+  .nav-cta:active { transform:translateY(0); box-shadow:0 2px 8px rgba(0,0,0,0.18); }
   .cta-pill { transition:transform .18s ease, box-shadow .18s ease; }
   .cta-pill:hover { opacity:1; transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.22); }
   .cta-pill:active { transform:translateY(0); box-shadow:0 4px 12px rgba(0,0,0,0.18); }
@@ -98,6 +99,10 @@
   .tcard:last-child { padding-right:0; border-right:none; }
   .wa-fab { opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity .2s ease, transform .2s ease; }
   .wa-fab.is-visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+  @media (max-width: 1000px) {
+    .contact { grid-template-columns:1fr !important; }
+    #contacto iframe { min-height:300px; }
+  }
   @media (max-width: 760px) {
     .navwrap { padding-left:20px !important; padding-right:20px !important; }
     .navmenu { gap:16px !important; }
@@ -321,14 +326,16 @@
         <div style="display:flex; flex-direction:column; gap:26px;">
           <div><div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint,#a7a8ac); margin-bottom:7px;">Consultorio</div><div style="font-size:16px; line-height:1.5;"><strong style="font-weight:600;">Hospital Ángeles Valle Oriente</strong><br>Av. Lázaro Cárdenas 401, Valle Oriente<br>66260 San Pedro Garza García, N.L.</div><a href="https://share.google/oTTHuZgDmqAkUblMw" target="_blank" rel="noopener" style="display:inline-block; margin-top:9px; font-size:14px; color:var(--accent,#66505d); border-bottom:1px solid color-mix(in srgb, var(--accent,#66505d) 32%, transparent); padding-bottom:2px;">Cómo llegar →</a></div>
           <div><div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint,#a7a8ac); margin-bottom:7px;">Teléfono</div><div style="font-size:16px;"><a href="tel:+528186926178" style="color:inherit;">+52 81 8692 6178</a></div></div>
-          <div><div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint,#a7a8ac); margin-bottom:7px;">WhatsApp</div><a href="https://wa.me/message/3TSNA4ONR43HB1" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; min-height:44px; font-size:16px; color:var(--accent,#66505d); border-bottom:1px solid color-mix(in srgb, var(--accent,#66505d) 32%, transparent);">Enviar mensaje →</a><div style="font-size:13px; color:var(--muted,#55575c); margin-top:4px;">Respondo normalmente el mismo día.</div></div>
+          <div><div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint,#a7a8ac); margin-bottom:7px;">WhatsApp</div><a href="https://wa.me/message/3TSNA4ONR43HB1" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; min-height:44px; font-size:16px; color:var(--accent,#66505d); border-bottom:1px solid color-mix(in srgb, var(--accent,#66505d) 32%, transparent);">Enviar mensaje →</a></div>
           <div><div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint,#a7a8ac); margin-bottom:7px;">Seguros y pagos</div><div style="font-size:15px; line-height:1.5; color:var(--muted,#55575c); margin-bottom:14px;">Consulta particular. Trabajo con las principales aseguradoras:</div><div class="insurers"><span class="ins-swap" title="AXA"><img class="ins-flat" src="assets/insurers/axa.png" alt="AXA"><img class="ins-reveal" src="assets/insurers/axa-color.png" alt="" aria-hidden="true"></span><span class="ins" style="--logo:url('assets/insurers/gnp-seguros.svg')" title="GNP Seguros"><img class="ins-shape" src="assets/insurers/gnp-seguros.svg" alt="GNP Seguros"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins-swap" title="New York Life"><img class="ins-flat" src="assets/insurers/new-york-life.png" alt="New York Life"><img class="ins-reveal" src="assets/insurers/new-york-life-color.png" alt="" aria-hidden="true"></span><span class="ins" style="--logo:url('assets/insurers/metlife.svg')" title="MetLife"><img class="ins-shape" src="assets/insurers/metlife.svg" alt="MetLife"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins-swap" title="Allianz"><img class="ins-flat" src="assets/insurers/allianz.png" alt="Allianz"><img class="ins-reveal" src="assets/insurers/allianz-color.svg" alt="" aria-hidden="true"></span><span class="ins" style="--logo:url('assets/insurers/mapfre.svg')" title="MAPFRE"><img class="ins-shape" src="assets/insurers/mapfre.svg" alt="MAPFRE"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins-swap" title="Bupa"><img class="ins-flat" src="assets/insurers/bupa.png?v=2" alt="Bupa"><img class="ins-reveal" src="assets/insurers/bupa-color.png?v=2" alt="" aria-hidden="true"></span><span class="ins" style="--logo:url('assets/insurers/zurich.svg')" title="Zurich"><img class="ins-shape" src="assets/insurers/zurich.svg" alt="Zurich"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins-swap" title="Chubb"><img class="ins-flat" src="assets/insurers/chubb.png" alt="Chubb"><img class="ins-reveal" src="assets/insurers/chubb-color.webp" alt="" aria-hidden="true"></span><span class="ins" style="--logo:url('assets/insurers/inbursa.svg')" title="Inbursa"><img class="ins-shape" src="assets/insurers/inbursa.svg" alt="Inbursa"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins" style="--logo:url('assets/insurers/banorte-seguros.svg')" title="Banorte Seguros"><img class="ins-shape" src="assets/insurers/banorte-seguros.svg" alt="Banorte Seguros"><span class="ins-mask" aria-hidden="true"></span></span><span class="ins" style="--logo:url('assets/insurers/bbva-seguros.svg')" title="BBVA Seguros"><img class="ins-shape" src="assets/insurers/bbva-seguros.svg" alt="BBVA Seguros"><span class="ins-mask" aria-hidden="true"></span></span></div></div>
         </div>
       </div>
-      <div style="display:flex; flex-direction:column; justify-content:flex-end; min-height:320px; padding:40px; border:1px solid var(--line,#eeeef0); background:var(--card,#f2eef0);">
-        <div style="font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent,#66505d); margin-bottom:18px;">Ubicación del consultorio</div>
-        <p style="font-family:var(--dfont,'Instrument Serif',serif); font-size:30px; line-height:1.25; max-width:420px; margin-bottom:26px;">Consulta la ruta y llega directamente desde Google Maps.</p>
-        <a href="https://share.google/oTTHuZgDmqAkUblMw" target="_blank" rel="noopener" style="align-self:flex-start; font-size:15px; color:var(--accent,#66505d); border-bottom:1px solid color-mix(in srgb, var(--accent,#66505d) 32%, transparent); padding-bottom:3px; white-space:nowrap;">Abrir ubicación →</a>
+      <div style="display:flex; flex-direction:column; border:1px solid var(--line,#eeeef0); background:var(--card,#f2eef0); overflow:hidden;">
+        <iframe src="https://www.google.com/maps?q=Dr.+Alexis+Covarrubias+Ur%C3%B3logo,+Av+L%C3%A1zaro+C%C3%A1rdenas+401,+Valle+Oriente,+San+Pedro+Garza+Garc%C3%ADa&output=embed" title="Mapa del consultorio del Dr. Alexis Covarrubias, Hospital Ángeles Valle Oriente" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="border:0; display:block; width:100%; flex:1; min-height:340px; max-height:460px;"></iframe>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; padding:12px 24px;">
+          <span style="font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent,#66505d);">Ubicación del consultorio</span>
+          <a href="https://share.google/oTTHuZgDmqAkUblMw" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; min-height:44px; font-size:15px; color:var(--accent,#66505d); border-bottom:1px solid color-mix(in srgb, var(--accent,#66505d) 32%, transparent); white-space:nowrap;">Abrir en Google Maps →</a>
+        </div>
       </div>
     </div>
   </div>
